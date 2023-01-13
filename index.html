@@ -26,12 +26,25 @@
         class="btn btn-success px-5 ms-4 btn-lg">Submit</button>
     </form>
     <div class="row justify-content-center">
-      <div class="col-md-9">
+      <div class="col-md-12">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <!-- <button type="button" id="selectedTodoDeleteBtn" class="btn btn-danger">Delete
+              Selected</button> -->
+            <button type="button" id="allTodoDeleteBtn" class="btn btn-danger">Delete All</button>
+          </div>
+          <div class="col-md-6">
+            <input type="search" class="form-control" id="SearchTodoData" placeholder="Search">
+          </div>
+        </div>
         <div class="to-do-table">
-          <table class="table table-striped table-bordered  table-hover">
+          <table class="table table-striped table-bordered table-hover">
             <thead>
               <tr>
-                <th scope="col">#</th>
+                <th scope="col" class="text-center">
+                  <input class="form-check-input" type="checkbox" value="" id="selectAllTodo">
+                </th>
+                <th scope="col" class="text-center">#</th>
                 <th scope="col">Todo Task</th>
                 <th scope="col">Created Date & Time</th>
                 <th scope="col">Modified Date & Time</th>
@@ -50,33 +63,56 @@
       tableBody = document.getElementById("ToDoTableBody"),
       todoForm = document.getElementById("ToDoForm"),
       nullTableBody = document.getElementById("NullToDo"),
+      searchInput = document.getElementById("SearchTodoData"),
+      selectAllCheckbox = document.getElementById("selectAllTodo"),
+      selectedTodoDeleteBtn = document.getElementById("selectedTodoDeleteBtn"),
+      allTodoDeleteBtn = document.getElementById("allTodoDeleteBtn"),
+      deleteCheckBox = `<input onClick="selectToDo(this)" class="form-check-input selectTodo" type="checkbox">`,
       updateButton = `<button onClick="editToDoModeOn(this)" type="button" class="btn btn-primary btn-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 22H3c-.41 0-.75-.34-.75-.75s.34-.75.75-.75h18c.41 0 .75.34.75.75s-.34.75-.75.75ZM19.02 3.482c-1.94-1.94-3.84-1.99-5.83 0l-1.21 1.21c-.1.1-.14.26-.1.4a8.129 8.129 0 0 0 5.53 5.53.4.4 0 0 0 .41-.1l1.2-1.21c.99-.98 1.47-1.93 1.47-2.89.01-.99-.47-1.95-1.47-2.94ZM15.61 11.53c-.29-.14-.57-.28-.84-.44a8.8 8.8 0 0 1-.64-.42c-.17-.11-.37-.27-.56-.43a1.22 1.22 0 0 1-.17-.15c-.33-.28-.7-.64-1.03-1.04-.03-.02-.08-.09-.15-.18-.1-.12-.27-.32-.42-.55a5.49 5.49 0 0 1-.39-.59c-.16-.27-.3-.54-.44-.82a6.88 6.88 0 0 1-.061-.135c-.148-.333-.583-.43-.84-.173L4.34 12.331c-.13.13-.25.38-.28.55l-.54 3.83c-.1.68.09 1.32.51 1.75.36.35.86.54 1.4.54.12 0 .24-.01.36-.03l3.84-.54c.18-.03.43-.15.55-.28l5.722-5.721c.26-.26.161-.705-.176-.85a26.852 26.852 0 0 1-.116-.05Z" fill="currentcolor"></path></svg></button>`,
       deleteButton = `<button onClick="deleteToDo(this)" type="button" class="btn btn-danger btn-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21.07 5.23c-1.61-.16-3.22-.28-4.84-.37v-.01l-.22-1.3c-.15-.92-.37-2.3-2.71-2.3h-2.62c-2.33 0-2.55 1.32-2.71 2.29l-.21 1.28c-.93.06-1.86.12-2.79.21l-2.04.2c-.42.04-.72.41-.68.82.04.41.4.71.82.67l2.04-.2c5.24-.52 10.52-.32 15.82.21h.08c.38 0 .71-.29.75-.68a.766.766 0 0 0-.69-.82ZM19.23 8.14c-.24-.25-.57-.39-.91-.39H5.68c-.34 0-.68.14-.91.39-.23.25-.36.59-.34.94l.62 10.26c.11 1.52.25 3.42 3.74 3.42h6.42c3.49 0 3.63-1.89 3.74-3.42l.62-10.25c.02-.36-.11-.7-.34-.95Zm-5.57 9.61h-3.33c-.41 0-.75-.34-.75-.75s.34-.75.75-.75h3.33c.41 0 .75.34.75.75s-.34.75-.75.75Zm.84-4h-5c-.41 0-.75-.34-.75-.75s.34-.75.75-.75h5c.41 0 .75.34.75.75s-.34.75-.75.75Z" fill="currentcolor"></path></svg></button>`,
       todoData = [],
       updateMode = false,
-      updateNodeIndex = null,
-      currentTime = new Date(),
-      currentDate = currentTime.getDate(),
-      currentMonth = currentTime.getMonth() + 1,
-      currentYear = currentTime.getFullYear(),
-      currentHour = currentTime.getHours(),
-      currentMin = currentTime.getMinutes();
+      updateNodeIndex = null;
 
     todoForm.addEventListener("submit", (e) => {
       e.preventDefault();
       formValidation();
     })
 
+    searchInput.addEventListener("keypress", (e) => {
+      console.log(e.target.value);
+      let searchText = e.target.value
+      todoData = JSON.parse(localStorage.getItem("ToDo")) || [];
+      todoData.forEach((ele, index) => {
+        ele.todo.forEach((e) => { searchText === e ? console.log("matching") : console.log("no matching") })
+      })
+
+      displayToDo();
+    })
+
+    selectAllCheckbox.addEventListener("click", (e) => {
+      let checkbox = document.querySelectorAll('.selectTodo');
+      e.target.checked ? (
+        checkbox.forEach((e) => {
+          e.checked = true
+        })
+      ) : (
+        checkbox.forEach((e) => {
+          e.checked = false
+        })
+      )
+    })
+
     const formValidation = () => {
       const inputToDoData = input.value;
       inputToDoData === "" ? (
         alert("Bro, You should add Todo task then only I can add.")
-      ) : checkToDo() !== undefined ? (
+      ) : checkEmptyToDo() !== undefined ? (
         alert("Bro, This is already in the list. Please add new one.")
       ) : updateMode ? editTodo() : submitToDo()
     }
 
-    const checkToDo = () => {
+    const checkEmptyToDo = () => {
       const todoData = JSON.parse(localStorage.getItem("ToDo")) || [];
       const checkAddedTodo = (data) => {
         return data.todo === input.value;
@@ -86,12 +122,19 @@
     }
 
     const submitToDo = () => {
+      let currentTime = new Date(),
+        currentDate = currentTime.getDate(),
+        currentMonth = currentTime.getMonth() + 1,
+        currentYear = currentTime.getFullYear(),
+        currentHour = currentTime.getHours(),
+        currentMin = currentTime.getMinutes();
       todoData.push({
         todo: input.value,
         createdDate: `${currentDate}-${currentMonth}-${currentYear}/${currentHour}:${currentMin}`,
         modifiedDate: ""
       })
       localStorage.setItem("ToDo", JSON.stringify(todoData));
+      todoForm.reset();
       displayToDo();
     }
 
@@ -101,6 +144,7 @@
         return (
           tableBody.innerHTML += `
           <tr id="${y}">
+            <td valign="middle" class="text-center">${deleteCheckBox}</td>
             <td valign="middle" class="text-center">${y + 1}</td>
             <td valign="middle">${x.todo}</td>
             <td valign="middle">${x.createdDate}</td>
@@ -110,22 +154,7 @@
           </tr>
         `)
       }) : (
-        tableBody.innerHTML += `
-          <tr>
-            <td colspan="5" class="text-center">No Todo Task</td>
-          </tr>
-        `
-      )
-      todoForm.reset();
-    }
-
-    const deleteToDo = (e) => {
-      let selectedToDo = e.parentElement.parentElement;
-      confirm("Are you sure?") && (
-        selectedToDo.remove(),
-        todoData.splice(selectedToDo.id, 1),
-        localStorage.setItem("ToDo", JSON.stringify(todoData)),
-        displayToDo()
+        tableBody.innerHTML += `<tr><td colspan="6" class="text-center">No Todo Task</td></tr>`
       )
     }
 
@@ -139,16 +168,74 @@
       let selectedToDoID = selectedToDo.id;
       todoData = JSON.parse(localStorage.getItem("ToDo")) || [];
       input.value = todoData[selectedToDoID].todo;
+      input.focus();
       updateNodeIndex = selectedToDoID;
     };
 
     const editTodo = (e) => {
+      let currentTime = new Date(),
+        currentDate = currentTime.getDate(),
+        currentMonth = currentTime.getMonth() + 1,
+        currentYear = currentTime.getFullYear(),
+        currentHour = currentTime.getHours(),
+        currentMin = currentTime.getMinutes();
       todoData = JSON.parse(localStorage.getItem("ToDo")) || [];
       todoData[updateNodeIndex].todo = input.value;
       todoData[updateNodeIndex].modifiedDate = `${currentDate}-${currentMonth}-${currentYear}/${currentHour}:${currentMin}`;
       localStorage.setItem("ToDo", JSON.stringify(todoData));
+      todoForm.reset();
       displayToDo();
       updateMode = false;
+    }
+
+    const selectToDo = () => {
+      let selectedTodo = [];
+      let allEqual = arr => arr.every(val => val === arr[0]);
+      let checkbox = document.querySelectorAll('.selectTodo');
+      checkbox.forEach((e) => {
+        selectedTodo.push(e.checked === true && e.checked)
+      })
+      const allChecked = allEqual(selectedTodo);
+      selectedTodo.forEach(e => {
+        if (e !== false) {
+          selectAllCheckbox.checked = allChecked === true ? true : false;
+        }
+      })
+    }
+
+    allTodoDeleteBtn.addEventListener("click", () => {
+      todoData.length > 0 ? confirm("Are you sure? want to delete all") && (
+        localStorage.removeItem("ToDo"),
+        todoData = JSON.parse(localStorage.getItem("ToDo")) || [],
+        displayToDo()
+      ) : alert("Bro, List is already empty. Look first")
+    });
+
+    selectedTodoDeleteBtn.addEventListener("click", () => {
+      let selectedTodo = [];
+      let checkbox = document.querySelectorAll('.selectTodo')
+
+      let checkedIndexes = checkbox
+
+      console.log(checkedIndexes)
+
+      // checkbox.forEach((e) => {
+      //   // selectedTodo.push(e.checked && e.parentElement.parentElement.id)
+      //   console.log(e.checked && e.parentElement.parentElement.id)
+      //   todoData.splice()
+      // })
+      localStorage.setItem("ToDo", JSON.stringify(todoData))
+      // displayToDo()
+    })
+
+    const deleteToDo = (e) => {
+      let selectedToDo = e.parentElement.parentElement;
+      confirm("Are you sure?") && (
+        selectedToDo.remove(),
+        todoData.splice(selectedToDo.id, 1),
+        localStorage.setItem("ToDo", JSON.stringify(todoData)),
+        displayToDo()
+      )
     }
 
     (() => {
