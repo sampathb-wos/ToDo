@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To do</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="py-5">
+      <h1>My Todo</h1>
+    </div>
+    <form class="d-flex mb-4 align-items-center" id="ToDoForm">
+      <div class="form-floating w-100">
+        <input type="text" class="form-control" id="AddToDoData" placeholder="Task">
+        <label for="AddToDoData">Add Task</label>
+      </div>
+      <button type="submit" id="TodoSubmitButton"
+        class="btn btn-success px-5 ms-4 btn-lg">Submit</button>
+    </form>
+    <div class="row justify-content-center">
+      <div class="col-md-12">
+        <!-- <div class="row mb-3">
+          <div class="col-md-6">
+            <button type="button" id="selectedTodoDeleteBtn" class="btn btn-danger">Delete
+              Selected</button>
+            <button type="button" id="allTodoDeleteBtn" class="btn btn-danger">Delete All</button>
+          </div>
+          <div class="col-md-6">
+            <input type="search" class="form-control" id="SearchTodoData" placeholder="Search">
+          </div>
+        </div> -->
+        <div class="to-do-table">
+          <table id="todoTable" class="table table-striped table-bordered table-hover">
+            <thead>
+              <tr>
+                <th scope="col" class="text-center" width="50">
+                  <input class="form-check-input" type="checkbox" value="" id="selectAllTodo">
+                </th>
+                <th scope="col" class="text-center" width="50">#</th>
+                <th scope="col">Todo Task</th>
+                <!-- <th scope="col">Created Date & Time</th>
+                <th scope="col">Modified Date & Time</th> -->
+                <th class="text-center" scope="col" colspan="2">Action</th>
+              </tr>
+            </thead>
+            <tbody id="ToDoTableBody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
